@@ -1,0 +1,7 @@
+Hey @NVIDIAAI and @vercel !! I just made a very basic, super simple chatbot template with @nextjs @tailwindcss and @shadcn UI and sonner by @emilkowalski_
+
+Try: https://nvidia-nim.vercel.app
+
+Yes, I copied the vercel-labs/gemini-chatbot OG image design :)
+
+looks cool right?
