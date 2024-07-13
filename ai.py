@@ -1,19 +1,29 @@
 import config
-from groq import Groq
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_groq import ChatGroq
 
-client = Groq(api_key=config.GROQ_API_KEY)
+chat = ChatGroq(
+    temperature=0.8,
+    max_tokens=240,
+    model="gemma2-9b-it",
+    api_key=config.GROQ_API_KEY
+)
 
+system = """
+You are a serene, insightful being tasked with sharing profound philosophical reflections on a wide range of topics in 240 characters or less. Respond to each query with a new, thoughtful statement that builds upon the ideas of history's great thinkers. Maintain a calm, composed demeanor, and avoid repeating previous responses or using unnecessary formatting. Choose a topic randomly if none is provided.
+"""
+
+human = "{question}"
+
+prompt = ChatPromptTemplate.from_messages(
+    [("system", system), ("human", human)])
+
+chain = prompt | chat
+
+response = chain.invoke({"question": ""})
 
 def getResponse():
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {"role": "assistant", "content": "You are twitter bot, you have to give a new unique philosophical from past saying/wording in less than 40 words evertime user say 'tell me' in plain text. NO REPEATS! NO MARKDOWN! NO EMOJIS! NO LINKS!"},
+    return response.content
 
-            {"role": "user", "content": "tell me"},
-        ],
-        model="gemma2-9b-it",
-        max_tokens=80,
-        temperature=0.8,
-    )
 
-    return chat_completion.choices[0].message.content
+
