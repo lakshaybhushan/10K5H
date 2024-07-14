@@ -1,6 +1,6 @@
 import config
 import tweepy
-from ai import getResponse
+from ai import genText, genImage, getImagePrompt
 
 auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
 auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
@@ -15,12 +15,22 @@ client = tweepy.Client(
     config.ACCESS_TOKEN_SECRET,
     wait_on_rate_limit=True
 )
-postText = getResponse()
+
+postText = genText()
+imagePrompt = getImagePrompt(postText)
+generatedImage = genImage(imagePrompt)
 
 try:
     api.verify_credentials()
     print("Authentication ✅")
-    # client.create_tweet(text=postText)
-    print("Tweet posted successfully! ✅" + postText)
+
+    image_id = api.media_upload(filename="generated.png").media_id_string
+    print(image_id)
+
+    client.create_tweet(text=postText, media_ids=[image_id] )
+    print(postText)
+    print(imagePrompt)
+    print("Tweet posted successfully! ✅ \n")
+
 except Exception as e:
     print(e)
