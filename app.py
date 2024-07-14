@@ -1,7 +1,8 @@
+import os
 import tweepy
 import config
 from auth import require_bearer_token
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from ai import genText, genImage, getImagePrompt
 
 app = Flask(__name__)
@@ -22,9 +23,16 @@ client = tweepy.Client(
 
 SECRET_BEARER_TOKEN = config.SECRET_KEY
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/static/favicon.ico")
+def fav():
+    print(os.path.join(app.root_path, 'static'))
+    return send_from_directory(app.static_folder, 'favicon.ico')
 
 
 @app.route('/tweet', methods=['POST'])
@@ -38,7 +46,8 @@ def tweet():
         api.verify_credentials()
         print("Authentication ✅")
 
-        image_id = api.media_upload(filename=f"images/{generatedImageName}").media_id_string
+        image_id = api.media_upload(
+            filename=f"images/{generatedImageName}").media_id_string
         client.create_tweet(text=generatedText, media_ids=[image_id])
 
         response = {
@@ -51,6 +60,7 @@ def tweet():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
