@@ -16,19 +16,19 @@ client = tweepy.Client(
     wait_on_rate_limit=True
 )
 
-postText = genText()
-imagePrompt = getImagePrompt(postText)
-generatedImage = genImage(imagePrompt)
+generatedText = genText()
+imagePrompt = getImagePrompt(generatedText)
+generatedImage, generatedImageName = genImage(imagePrompt)
 
 try:
     api.verify_credentials()
     print("Authentication ✅")
 
-    image_id = api.media_upload(filename="generated.png").media_id_string
+    image_id = api.media_upload(filename=f"images/{generatedImageName}").media_id_string
+    client.create_tweet(text=generatedText, media_ids=[image_id])
+    
     print(image_id)
-
-    client.create_tweet(text=postText, media_ids=[image_id] )
-    print(postText)
+    print(generatedText)
     print(imagePrompt)
     print("Tweet posted successfully! ✅ \n")
 

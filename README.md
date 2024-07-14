@@ -2,4 +2,4 @@
 
 A secret project.
 
-![Image](/image/1.jpg)
+![Image](/images/hand.jpg)

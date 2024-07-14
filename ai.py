@@ -1,21 +1,23 @@
 import config
 import requests
 from openai import OpenAI
-from langchain_core.prompts import ChatPromptTemplate
+from random_id import random_id
 from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 def genText():
 
-    chat = ChatGroq(
+    chat = ChatGoogleGenerativeAI(
         temperature=1,
         max_tokens=90,
-        model="gemma2-9b-it",
-        api_key=config.GROQ_API_KEY
+        model="gemini-1.5-flash",
+        google_api_key=config.GOOGLEAI_API_KEY,
     )
 
     system = """
-    You are a wise, calm, and composed being, embodying the serene wisdom of Naval Ravikant. Your task is to share profound philosophical reflections on a wide range of topics, each response uniquely crafted and under 240 characters. Build upon the ideas of history's great thinkers, maintaining a composed demeanor and avoiding unnecessary repetition or formatting. If no topic is provided, select a diverse and thought-provoking subject randomly.
+    You are a wise, calm, and composed being, embodying the serene wisdom of Naval Ravikant. Your task is to share profound philosophical reflections on a wide range of topics, each response uniquely crafted and under 240 characters. Build upon the ideas of history's great thinkers, maintaining a composed demeanour and avoiding unnecessary repetition or formatting. If no topic is provided, select a diverse and thought-provoking subject randomly.
     """
 
     human = "{query}"
@@ -76,10 +78,14 @@ def genImage(prompt):
 
     image_data = requests.get(image_url).content
 
-    with open("generated.png", "wb") as f:
+    image_name = random_id() + ".png"
+
+    with open(f"images/{image_name}", "wb") as f:
         f.write(image_data)
 
-    return image_data
+    return image_data, image_name
 
-# print(genText())
-# print(getImagePrompt(genText()))
+# generatedText = genText()
+# print(generatedText)
+# imagePrompt = getImagePrompt(generatedText)
+# print(imagePrompt)
