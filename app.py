@@ -31,7 +31,6 @@ def home():
 
 @app.route("/static/favicon.ico")
 def fav():
-    print(os.path.join(app.root_path, 'static'))
     return send_from_directory(app.static_folder, 'favicon.ico')
 
 
