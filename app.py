@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify
-import config
 import tweepy
+import config
+from auth import require_bearer_token
+from flask import Flask, request, jsonify, render_template
 from ai import genText, genImage, getImagePrompt
 
 app = Flask(__name__)
@@ -19,8 +20,16 @@ client = tweepy.Client(
     wait_on_rate_limit=True
 )
 
+SECRET_BEARER_TOKEN = config.SECRET_KEY
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
 @app.route('/tweet', methods=['POST'])
-def generate_and_tweet():
+@require_bearer_token(SECRET_BEARER_TOKEN)
+def tweet():
     try:
         generatedText = genText()
         imagePrompt = getImagePrompt(generatedText)
@@ -28,7 +37,6 @@ def generate_and_tweet():
 
         api.verify_credentials()
         print("Authentication ✅")
-
 
         image_id = api.media_upload(filename=f"images/{generatedImageName}").media_id_string
         client.create_tweet(text=generatedText, media_ids=[image_id])
